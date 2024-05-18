@@ -23,3 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment
+.env
+
+# Package files
+package-lock.json

@@ -19,9 +19,10 @@ function loader(element) {
 function typeText(element, text) {
   let index = 0;
   const interval = setInterval(() => {
-    element.textContent += text[index];
-    index++;
-    if (index === text.length) {
+    if (index < text.length) {
+      element.textContent += text.charAt(index);
+      index++;
+    } else {
       clearInterval(interval);
     }
   }, 50);
@@ -69,6 +70,26 @@ const handleSubmit = async (e) => {
   const messageDiv = document.getElementById(uniqueId);
 
   loader(messageDiv);
+
+  const response = await fetch("http://localhost:5001", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt: data.get("prompt"),
+    }),
+  });
+  clearInterval(loadInterval);
+  messageDiv.innerHTML = "";
+
+  if (response.ok) {
+    const data = await response.json();
+    const parsedData = data.bot.trim();
+    typeText(messageDiv, parsedData);
+  } else {
+    messageDiv.textContent = "Error! Please try again.";
+  }
 };
 
 form.addEventListener("submit", handleSubmit);
